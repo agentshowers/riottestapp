@@ -19,4 +19,4 @@ ENV PORT 4555
 ENV HOST 0.0.0.0
 
 # Run app.py when the container launches
-CMD ["python", "app.py"]
+CMD ["python", "src/app.py"]

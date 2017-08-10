@@ -1,6 +1,6 @@
 """The main module for the API."""
 import json
-from flask import Flask, request, render_template
+from flask import Flask, request, current_app
 import LoL
 import config
 
@@ -9,7 +9,7 @@ APP = Flask(__name__)
 @APP.route("/")
 def home():
     """Index for front-end."""
-    return render_template('index.html')
+    return current_app.send_static_file('index.html')
 
 @APP.route("/gamedata")
 def gamedata():
