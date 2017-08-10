@@ -45,6 +45,22 @@ def mock_get_match_data(region, match_id):
             return json.loads(data)
     raise src.LoL.ApiError("Match does not exist")
 
+def mock_get_champion_name(region, champion_id):
+    """Mocks LoL.get_champion_name"""
+    names = {"4" : "Twisted Fate", "78" : "Poppy", "120" : "Hecarim",
+             "143" : "Zyra", "245" : "Ekko", "51" : "Caitlyn",
+             "222" : "Jynx", "11" : "Master Yi", "53" : "Blitzcrank",
+             "92" : "Riven"}
+    return names[str(champion_id)]
+
+def mock_get_champion_mastery(region, champion_id, summoner_id):
+    """Mocks LoL.get_champion_mastery"""
+    masteries = {"4" : 2, "78" : 3, "120" : 3, "143" : 3, "245" : 4,
+                 "51" : 5, "222" : 5, "11" : 6, "53" : 6, "92" : 6}
+    return masteries[str(champion_id)]
+
+
+
 class APITests(unittest.TestCase):
     """Tests the exposed API."""
 

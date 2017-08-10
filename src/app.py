@@ -1,6 +1,6 @@
 """The main module for the API."""
 import json
-from flask import Flask, request, current_app
+from flask import Flask, request, current_app, Response
 import LoL
 import config
 
@@ -16,7 +16,11 @@ def gamedata():
     """Endpoint that returns the gamedata for a given summoner and region."""
     region = request.args.get("region", "")
     summoner = request.args.get("summoner", "")
-    return get_game_data(region, summoner)
+    payload = get_game_data(region, summoner)
+    resp = Response(response=payload,
+                    status=200,
+                    mimetype="application/json")
+    return resp
 
 class APIError(Exception):
     """Custom exception handling API errors."""
@@ -79,7 +83,7 @@ def parse_match_data(region, match_info):
         p_data = [p for p in match_info["participants"] if p["participantId"] == p_id][0]
         team_id = p_data["teamId"]
         champion_id = p_data["championId"]
-        champion_name = "bob"#LoL.get_champion_name(region, champion_id)
+        champion_name = LoL.get_champion_name(region, champion_id)
         champion_mastery = LoL.get_champion_mastery(region, champion_id, summoner_id)
         participant = {"summonerId" : summoner_id, "summonerName" : summoner_name,
                        "teamId" : team_id, "championId" : champion_id,
@@ -96,7 +100,6 @@ def error_response(message, status_code):
     return json.dumps({"status" : {"message" : message, "status_code" : status_code}})
 
 if __name__ == "__main__":
-    #CONFIG = config.load_from_env()
-    #APP.run(host=CONFIG["HOST"], port=CONFIG["PORT"])
-    print get_game_data("EUW","H4uZ")
+    CONFIG = config.load_from_env()
+    APP.run(host=CONFIG["HOST"], port=CONFIG["PORT"])
     
