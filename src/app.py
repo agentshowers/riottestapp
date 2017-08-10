@@ -20,9 +20,7 @@ def gamedata():
 
 class APIError(Exception):
     """Custom exception handling API errors."""
-    status_code = 500
-
-    def __init__(self, message, status_code=None):
+    def __init__(self, message, status_code):
         Exception.__init__(self)
         if status_code is not None:
             self.status_code = status_code
@@ -52,7 +50,7 @@ def get_game_data(region, summoner):
         account_id = LoL.get_account_id(region, summoner)
         latest_match = LoL.get_latest_match(region, account_id)
         match_data = LoL.get_match_data(region, latest_match)
-        return json.dumps(match_data)
+        return json.dumps(parse_match_data(region, match_data))
 
     #Handle API Errors
     except LoL.SummonerNotFoundError as summ_error:
@@ -62,19 +60,43 @@ def get_game_data(region, summoner):
         raise APIError(matches_error.message, 404)
 
     except LoL.ApiError as api_error:
-        raise APIError(api_error.message)
+        raise APIError(api_error.message, 500)
 
     except LoL.RequestError as request_error:
-        raise APIError(request_error.message)
+        raise APIError(request_error.message, 500)
 
     except Exception as ex:
-        raise APIError(ex.message)
+        raise APIError(ex.message, 500)
+
+def parse_match_data(region, match_info):
+    """Gets match data from response JSON object"""
+    participant_list = []
+
+    for player in match_info["participantIdentities"]:
+        p_id = player["participantId"]
+        summoner_name = player["player"]["summonerName"]
+        summoner_id = player["player"]["summonerId"]
+        p_data = [p for p in match_info["participants"] if p["participantId"] == p_id][0]
+        team_id = p_data["teamId"]
+        champion_id = p_data["championId"]
+        champion_name = "bob"#LoL.get_champion_name(region, champion_id)
+        champion_mastery = LoL.get_champion_mastery(region, champion_id, summoner_id)
+        participant = {"summonerId" : summoner_id, "summonerName" : summoner_name,
+                       "teamId" : team_id, "championId" : champion_id,
+                       "championName" : champion_name, "championMastery" : champion_mastery}
+        participant_list.append(participant)
+
+    return {"gameId" : match_info["gameId"],
+            "participants" : sorted(participant_list,
+                                    key=lambda part: (part["championMastery"], part["championId"]))}
+
 
 def error_response(message, status_code):
     """Generates a generic error response."""
     return json.dumps({"status" : {"message" : message, "status_code" : status_code}})
 
 if __name__ == "__main__":
-    CONFIG = config.load_from_env()
-    APP.run(host=CONFIG["HOST"], port=CONFIG["PORT"])
+    #CONFIG = config.load_from_env()
+    #APP.run(host=CONFIG["HOST"], port=CONFIG["PORT"])
+    print get_game_data("EUW","H4uZ")
     
