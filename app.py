@@ -80,5 +80,4 @@ def error_response(message, status_code):
 if __name__ == "__main__":
     CONFIG = config.load_from_env()
     APP.run(host=CONFIG["HOST"], port=CONFIG["PORT"])
-    #print get_game_data("EUW", "H4uZ")
     
