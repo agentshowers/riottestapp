@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>LoL Match Data</title>
+    <script src="static/jquery-3.2.1.min.js"></script>
+    <script src="static/script.js"></script>
+  </head>
+  <body>
+    Summoner Name: <input id="summonerName"><br>
+    Region: 
+    <select id="region">
+          <option value="BR">Brazil</option>
+          <option value="EUNE">EU Nordic &amp; East</option>
+          <option value="EUW">EU West</option>
+          <option value="JP">Japan</option>
+          <option value="KR">Republic of Korea</option>
+          <option value="LAN">Latin America North</option>
+          <option value="LAS">Latin America South</option>
+          <option value="NA">North America</option>
+          <option value="OCE">Oceania</option>
+          <option value="TR">Turkey</option>
+          <option value="RU">Russia</option>
+          <option value="PBE">PBE</option>
+    </select> <br>
+    <input type="submit" value="Get latest Match Data" onclick="getMatchData()"><br>
+    <div id="gamedata">
+      <div id="errorMessage" style="color: red"></div>
+      <div id="gameID"></div>
+      <table id="participantTable" />
+    </div>
+  </body>
+</html>
