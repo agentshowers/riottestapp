@@ -3,31 +3,34 @@
   <head>
     <meta charset="utf-8">
     <title>LoL Match Data</title>
-    <link href="/static/favicon.ico" rel="icon" type="image/x-icon" />
+    <link href="static/favicon.ico" rel="icon" type="image/x-icon" />
+    <link href="static/style.css" rel="stylesheet" />
     <script src="static/jquery-3.2.1.min.js"></script>
     <script src="static/script.js"></script>
   </head>
   <body>
-    Summoner Name: <input id="summonerName"><br>
-    Region: 
-    <select id="region">
-          <option value="BR">Brazil</option>
-          <option value="EUNE">EU Nordic &amp; East</option>
-          <option value="EUW">EU West</option>
-          <option value="JP">Japan</option>
-          <option value="KR">Republic of Korea</option>
-          <option value="LAN">Latin America North</option>
-          <option value="LAS">Latin America South</option>
-          <option value="NA">North America</option>
-          <option value="OCE">Oceania</option>
-          <option value="TR">Turkey</option>
-          <option value="RU">Russia</option>
-          <option value="PBE">PBE</option>
-    </select> <br>
-    <input type="submit" value="Get latest Match Data" onclick="getMatchData()"><br>
-    <div id="gamedata">
+    <div class="formdiv">
+      <label for="summonerName">Summoner Name</label>
+      <input type="text"id="summonerName"> 
+      <label for="region">Region</label>
+      <select id="region">
+            <option value="BR">Brazil</option>
+            <option value="EUNE">EU Nordic &amp; East</option>
+            <option value="EUW">EU West</option>
+            <option value="JP">Japan</option>
+            <option value="KR">Republic of Korea</option>
+            <option value="LAN">Latin America North</option>
+            <option value="LAS">Latin America South</option>
+            <option value="NA">North America</option>
+            <option value="OCE">Oceania</option>
+            <option value="TR">Turkey</option>
+            <option value="RU">Russia</option>
+            <option value="PBE">PBE</option>
+      </select>
+      <input type="submit" value="Get latest match data" onclick="getMatchData()">
       <div id="errorMessage" style="color: red"></div>
-      <div id="gameID"></div>
+    </div>
+    <div id="gamedata" class="gamedatadiv" style="display: none">
       <table id="participantTable" />
     </div>
   </body>
