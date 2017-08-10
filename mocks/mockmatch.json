@@ -123,7 +123,7 @@
         {
             "player": {
                 "currentPlatformId": "EUW1",
-                "summonerName": "dw\\u00efd",
+                "summonerName": "dw\u00efd",
                 "matchHistoryUri": "/v1/stats/player_history/EUW1/23844686",
                 "platformId": "EUW1",
                 "currentAccountId": 23844686,

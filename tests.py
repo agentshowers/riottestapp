@@ -26,6 +26,8 @@ def mock_get_account_id(region, summoner_name):
         return VALID_SUMMONER_ID
     elif summoner_name == NO_GAMES_SUMMONER_NAME:
         return NO_GAMES_SUMMONER_ID
+    elif summoner_name == INVALID_MATCH_SUMMONER_NAME:
+        return INVALID_MATCH_SUMMONER_ID
     raise src.LoL.SummonerNotFoundError("Summoner {summoner} does not exist."
                                         .format(summoner=summoner_name))
 
@@ -59,8 +61,6 @@ def mock_get_champion_mastery(region, champion_id, summoner_id):
                  "51" : 5, "222" : 5, "11" : 6, "53" : 6, "92" : 6}
     return masteries[str(champion_id)]
 
-
-
 class APITests(unittest.TestCase):
     """Tests the exposed API."""
 
@@ -69,6 +69,8 @@ class APITests(unittest.TestCase):
         src.LoL.get_account_id = mock_get_account_id
         src.LoL.get_latest_match = mock_get_latest_match
         src.LoL.get_match_data = mock_get_match_data
+        src.LoL.get_champion_mastery = mock_get_champion_mastery
+        src.LoL.get_champion_name = mock_get_champion_name
 
     def test_empty_region(self):
         """Validates if no region returns an error"""
@@ -104,6 +106,20 @@ class APITests(unittest.TestCase):
             src.app.get_game_data(VALID_REGION, NO_GAMES_SUMMONER_NAME)
         self.assertIn("Summoner does not have any matches recorded", raised.exception.message)
         self.assertEqual(raised.exception.status_code, 404)
+
+    def test_player_with_invalid_match(self):
+        """Validates if invalid match id returns an error"""
+        with self.assertRaises(src.app.APIError) as raised:
+            src.app.get_game_data(VALID_REGION, INVALID_MATCH_SUMMONER_NAME)
+        self.assertIn("Match does not exist", raised.exception.message)
+        self.assertEqual(raised.exception.status_code, 500)
+
+    def test_valid_response(self):
+        """Validates if good response is as expected (sorted and with correct values)"""
+        with open("mocks\\mockresponse.json", "r") as myfile:
+            expected_result = myfile.read()
+            obtained_result = src.app.get_game_data(VALID_REGION, VALID_SUMMONER_NAME)
+            self.assertEqual(expected_result, obtained_result)
 
 if __name__ == '__main__':
     API_SUITE = unittest.TestLoader().loadTestsFromTestCase(APITests)
