@@ -1,3 +1,11 @@
+$(document)
+    .ajaxStart(function () {
+        $("#loadingDiv").css("display","");
+    })
+    .ajaxStop(function () {
+        $("#loadingDiv").css("display","none");
+    });
+
 function getMatchData () {
     var summoner = $("#summonerName").val();
     var region = $("#region").val();
@@ -48,7 +56,7 @@ function createRow(participant) {
     tr += "<td>" + participant["teamId"]  + "</td>";
     tr += "<td>" + participant["championId"]  + "</td>";
     tr += "<td>" + participant["championName"]  + "</td>";
-    tr += "<td>" + participant["championMastery"]  + "</td>";
+    tr += "<td><img class='mastery' src='static/images/Mastery_" + participant["championMastery"] + ".png'></td>";
     tr +="</tr>";
     return tr;
 }

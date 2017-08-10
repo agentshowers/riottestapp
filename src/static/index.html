@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <title>LoL Match Data</title>
-    <link href="static/favicon.ico" rel="icon" type="image/x-icon" />
+    <link href="static/images/favicon.ico" rel="icon" type="image/x-icon" />
     <link href="static/style.css" rel="stylesheet" />
     <script src="static/jquery-3.2.1.min.js"></script>
     <script src="static/script.js"></script>
@@ -29,6 +29,9 @@
       </select>
       <input type="submit" value="Get latest match data" onclick="getMatchData()">
       <div id="errorMessage" style="color: red"></div>
+    </div>
+    <div id="loadingDiv" style="display:none">
+      <img src="static/images/katarina.gif" alt="Loading...">
     </div>
     <div id="gamedata" class="gamedatadiv" style="display: none">
       <table id="participantTable" />

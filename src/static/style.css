@@ -35,6 +35,10 @@ input[type=submit]:hover {
     width: 40%;
 }
 
+#loadingDiv {
+    text-align: center;
+}
+
 th {
     background-color: #4CAF50;
     color: white;
@@ -43,7 +47,6 @@ th {
 
 td {
     height: 25px;
-    vertical-align: bottom;
 }
 
 th, td {
@@ -57,4 +60,8 @@ tr:nth-child(even) {
 
 tr:hover {
     background-color: #f6f6f6;
+}
+
+.mastery {
+    height: 40px;
 }
