@@ -2,7 +2,6 @@
 import json
 from flask import Flask, request, current_app, Response
 import LoL
-import os.path
 
 APP = Flask(__name__)
 
