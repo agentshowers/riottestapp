@@ -4,9 +4,18 @@ import threading
 import json
 import os
 
+
 CHAMPIONS_CACHE_TIME = 604800L #Cache champions names for 1 week max
 CHAMPIONS_LOCK = threading.Lock()
-CHAMPIONS_FILE = os.path.dirname(os.path.abspath(__file__)) + "\\..\\cache\\champions.json"
+
+def champions_file_path():
+    """Finds the path for the cache"""
+    if os.getenv("CONTAINER"):
+        return "/app/cache/champions.json"
+    else:
+        return os.path.dirname(os.path.abspath(__file__)) + "\\..\\cache\\champions.json"
+
+CHAMPIONS_FILE = champions_file_path()
 
 def load_from_file():
     """Loads the stored champions from file"""

@@ -15,6 +15,7 @@ EXPOSE 80
 
 # Define environment variables
 ENV API_KEY LoremIpsum
+ENV CONTAINER Yes
 
 # Run app.py when the container launches
 CMD ["python", "src/app.py"]
