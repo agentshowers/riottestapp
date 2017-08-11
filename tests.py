@@ -65,12 +65,26 @@ class APITests(unittest.TestCase):
     """Tests the exposed API."""
 
     def setUp(self):
+        self.old_is_valid_region = src.LoL.is_valid_region
         src.LoL.is_valid_region = mock_is_valid_region
+        self.old_get_account_id = src.LoL.get_account_id
         src.LoL.get_account_id = mock_get_account_id
+        self.old_get_latest_match = src.LoL.get_latest_match
         src.LoL.get_latest_match = mock_get_latest_match
+        self.old_get_match_data = src.LoL.get_match_data
         src.LoL.get_match_data = mock_get_match_data
+        self.old_get_champion_mastery = src.LoL.get_champion_mastery
         src.LoL.get_champion_mastery = mock_get_champion_mastery
+        self.old_get_champion_name = src.LoL.get_champion_name
         src.LoL.get_champion_name = mock_get_champion_name
+
+    def tearDown(self):
+        src.LoL.is_valid_region = self.old_is_valid_region
+        src.LoL.get_account_id = self.old_get_account_id
+        src.LoL.get_latest_match = self.old_get_latest_match
+        src.LoL.get_match_data = self.old_get_match_data
+        src.LoL.get_champion_mastery = self.old_get_champion_mastery
+        src.LoL.get_champion_name = self.old_get_champion_name
 
     def test_empty_region(self):
         """Validates if no region returns an error"""
@@ -121,8 +135,86 @@ class APITests(unittest.TestCase):
             obtained_result = src.app.get_game_data(VALID_REGION, VALID_SUMMONER_NAME)
             self.assertEqual(expected_result, obtained_result)
 
+CHAMPION_ID_FRESH = 11111
+CHAMPION_ID_NONCACHE = 22222
+CHAMPION_NAME_FRESH = "Fresh"
+CHAMPION_NAME_FRESH_NO_CACHE = "SomethingsWrong"
+CHAMPION_NAME_NONCACHE = "NonCache"
+CHAMPION_NAME_INVALID = "Invalid"
+
+def mock_cache_get_champion_name(champion_id):
+    """Mocks cache.get_champion_name"""
+    if champion_id == CHAMPION_ID_FRESH:
+        return CHAMPION_NAME_FRESH
+    return CHAMPION_NAME_NONCACHE
+
+def mock_cache_add_champion_name(champion_id, champion_name):
+    """Mocks cache.add_champion_name"""
+    #Should do nothing
+
+def mock_api_key_query():
+    """Mocks LoL.api_key_query"""
+    return {"api_key" : "LoremIpsum"}
+
+def mock_get_base_url(region):
+    """Mocks LoL.get_base_url"""
+    return region + ".com"
+
+def mock_requests_get(url, params):
+    """Mocks requests.get"""
+    if CHAMPION_ID_FRESH in url:
+        payload = CHAMPION_NAME_FRESH_NO_CACHE
+    elif CHAMPION_ID_NONCACHE in url:
+        payload = CHAMPION_NAME_NONCACHE
+    else:
+        payload = CHAMPION_NAME_INVALID
+    return {"status_code" : 200, "payload" : payload}
+
+def mock_response_payload(req):
+    """Mocks LoL.response_payload"""
+    return req["payload"]
+
+class CacheTests(unittest.TestCase):
+    """Tests the cache of champions for rate limit"""
+
+    def setUp(self):
+        self.old_get_champion_name = src.cache.get_champion_name
+        src.cache.get_champion_name = mock_cache_get_champion_name
+        self.old_add_champion_name = src.cache.add_champion_name
+        src.cache.add_champion_name = mock_cache_add_champion_name
+        self.old_api_key_query = src.LoL.api_key_query
+        src.LoL.api_key_query = mock_api_key_query
+        self.old_get_base_url = src.LoL.get_base_url
+        src.LoL.get_base_url = mock_get_base_url
+        self.old_request_get = src.LoL.request_get
+        src.LoL.request_get = mock_requests_get
+        self.old_response_payload = src.LoL.response_payload
+        src.LoL.response_payload = mock_response_payload
+
+    def tearDown(self):
+        src.cache.get_champion_name = self.old_get_champion_name
+        src.cache.add_champion_name = self.old_add_champion_name
+        src.LoL.api_key_query = self.old_api_key_query
+        src.LoL.get_base_url = self.old_get_base_url
+        src.LoL.request_get = self.old_request_get
+        src.LoL.response_payload = self.old_response_payload
+
+    def test_champion_in_cache(self):
+        """Tests that champion name in cache doesn't trigger request"""
+        name = src.LoL.get_champion_name("", CHAMPION_ID_FRESH)
+        self.assertEqual(CHAMPION_NAME_FRESH, name)
+
+    def test_champion_not_in_cache(self):
+        """Tests that champion name not in cache triggers request"""
+        name = src.LoL.get_champion_name("", CHAMPION_ID_NONCACHE)
+        self.assertEqual(CHAMPION_NAME_NONCACHE, name)
+
 if __name__ == '__main__':
     API_SUITE = unittest.TestLoader().loadTestsFromTestCase(APITests)
     unittest.TextTestRunner(verbosity=2).run(API_SUITE)
+    CACHE_SUITE = unittest.TestLoader().loadTestsFromTestCase(CacheTests)
+    unittest.TextTestRunner(verbosity=2).run(CACHE_SUITE)
 
-#TODO Mock the requests.get method and test LoL module methods
+#TODO Mock all possible responses from the LoL API and test all LoL.py methods
+#TODO Test responses with rate limits
+#TODO Test methods in cache.py
