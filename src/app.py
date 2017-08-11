@@ -32,7 +32,10 @@ class APIError(Exception):
 @APP.errorhandler(APIError)
 def handle_api_error(error):
     """Handles API errors."""
-    return error.message, error.status_code
+    resp = Response(response=error.message,
+                    status=error.status_code,
+                    mimetype="application/json")
+    return resp
 
 def get_game_data(region, summoner):
     """Gets the game data."""
