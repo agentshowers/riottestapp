@@ -2,7 +2,7 @@
 import json
 from flask import Flask, request, current_app, Response
 import LoL
-import config
+import os.path
 
 APP = Flask(__name__)
 
@@ -100,6 +100,5 @@ def error_response(message, status_code):
     return json.dumps({"status" : {"message" : message, "status_code" : status_code}})
 
 if __name__ == "__main__":
-    CONFIG = config.load_from_env()
-    APP.run(host=CONFIG["HOST"], port=CONFIG["PORT"])
+    APP.run(host="0.0.0.0", port=80)
     

@@ -3,7 +3,5 @@ import os
 
 def load_from_env():
     """Loads the configuration variables from the enviroment."""
-    config = {"API_KEY" : os.getenv("API_KEY"),
-              "PORT" : os.getenv("PORT", 4555),
-              "HOST" : os.getenv("HOST", "0.0.0.0")}
+    config = {"API_KEY" : os.getenv("API_KEY")}
     return config
